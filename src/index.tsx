@@ -82,6 +82,7 @@ function Settings() {
   const [input, setInput] = React.useState("");
   const { FormSwitchRow, FormInput, FormRow, FormSection, FormDivider } = Forms;
   const { View, TouchableOpacity, Text } = ReactNative;
+  const { ScrollView } = findByProps("ScrollView");
   const h = React.createElement;
   const UserStore = findByStoreName("UserStore");
 
@@ -108,69 +109,73 @@ function Settings() {
   };
 
   return h(
-    View,
-    null,
+    ScrollView, // switched from View to ScrollView cuz someone forgot
+    { style: { flex: 1 }, contentContainerStyle: { paddingBottom: 24 } },
     h(
-      FormSection,
-      { title: "General" },
-      h(FormSwitchRow, {
-        label: "Remove profile effects",
-        subLabel: "Strips Nitro profile effects from users everywhere, including server profiles",
-        value: storage.removeEffect,
-        onValueChange: (v) => {
-          storage.removeEffect = v;
-          forceUpdate();
-        },
-      }),
-      h(FormSwitchRow, {
-        label: "Keep friends' effects",
-        subLabel: "Friends are automatically whitelisted",
-        value: storage.exemptFriends,
-        onValueChange: (v) => {
-          storage.exemptFriends = v;
-          forceUpdate();
-        },
-      })
-    ),
-    h(
-      FormSection,
-      { title: "Other exceptions" },
-      h(FormInput, {
-        title: "User ID",
-        placeholder: "Add a non-friend's user ID to keep their effect",
-        value: input,
-        onChange: setInput,
-        onSubmitEditing: addException,
-        returnKeyType: "done",
-      }),
+      View,
+      null,
       h(
-        TouchableOpacity,
-        {
-          onPress: addException,
-          style: {
-            marginHorizontal: 16,
-            marginTop: 8,
-            marginBottom: 4,
-            paddingVertical: 10,
-            borderRadius: 8,
-            backgroundColor: "#5865F2",
-            alignItems: "center",
+        FormSection,
+        { title: "General" },
+        h(FormSwitchRow, {
+          label: "Remove profile effects",
+          subLabel: "Strips Nitro profile effects from users everywhere, including server profiles",
+          value: storage.removeEffect,
+          onValueChange: (v) => {
+            storage.removeEffect = v;
+            forceUpdate();
           },
-        },
-        h(Text, { style: { color: "#fff", fontWeight: "600" } }, "Add User ID")
+        }),
+        h(FormSwitchRow, {
+          label: "Keep friends' effects",
+          subLabel: "Friends are automatically whitelisted",
+          value: storage.exemptFriends,
+          onValueChange: (v) => {
+            storage.exemptFriends = v;
+            forceUpdate();
+          },
+        })
       ),
-      h(FormDivider, null),
-      storage.effectExceptions.length === 0 &&
-        h(FormRow, { label: "No manual exceptions added" }),
-      ...storage.effectExceptions.map((id) => {
-        const user = UserStore?.getUser?.(id);
-        return h(FormRow, {
-          key: id,
-          label: user?.username ?? id,
-          subLabel: id,
-          onPress: () => removeException(id),
-        });
-      })
+      h(
+        FormSection,
+        { title: "Other exceptions" },
+        h(FormInput, {
+          title: "User ID",
+          placeholder: "Add a non-friend's user ID to keep their effect",
+          value: input,
+          onChange: setInput,
+          onSubmitEditing: addException,
+          returnKeyType: "done",
+        }),
+        h(
+          TouchableOpacity,
+          {
+            onPress: addException,
+            style: {
+              marginHorizontal: 16,
+              marginTop: 8,
+              marginBottom: 4,
+              paddingVertical: 10,
+              borderRadius: 8,
+              backgroundColor: "#5865F2",
+              alignItems: "center",
+            },
+          },
+          h(Text, { style: { color: "#fff", fontWeight: "600" } }, "Add User ID")
+        ),
+        h(FormDivider, null),
+        storage.effectExceptions.length === 0 &&
+          h(FormRow, { label: "No manual exceptions added" }),
+        ...storage.effectExceptions.map((id) => {
+          const user = UserStore?.getUser?.(id);
+          return h(FormRow, {
+            key: id,
+            label: user?.username ?? id,
+            subLabel: id,
+            onPress: () => removeException(id),
+          });
+        })
+      )
     )
   );
 }
